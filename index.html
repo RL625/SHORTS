@@ -1,33 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
-                );
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -99,14 +70,14 @@
         .content-list li:hover {
             background-color: #f5f5f7;
         }
-        .content-detail, .practice-detail {
+        .content-detail {
             display: none;
             margin-top: 20px;
             padding: 20px;
             background-color: #f5f5f7;
             border-radius: 12px;
         }
-        .content-detail.active, .practice-detail.active {
+        .content-detail.active {
             display: block;
         }
         .practice-grid {
@@ -128,6 +99,31 @@
             margin-top: 0;
             color: #007aff;
         }
+        .practice-detail {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 200;
+            max-width: 500px;
+            width: 90%;
+        }
+        .practice-detail.active {
+            display: block;
+        }
+        .practice-detail .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #007aff;
+        }
         footer {
             background-color: #000;
             color: #fff;
@@ -141,6 +137,10 @@
             }
             .section {
                 padding: 20px;
+            }
+            .practice-detail {
+                top: 10%;
+                width: 95%;
             }
         }
     </style>
@@ -276,7 +276,7 @@
                         <li>特效節制：避免過多特效分散觀眾注意力。</li>
                     </ul>
                 </div>
-                <li onclick="showétait: showDetail('content', 15)">15. 輸出版本</li>
+                <li onclick="showDetail('content', 15)">15. 輸出版本</li>
                 <div id="content-detail-15" class="content-detail">
                     <ul>
                         <li>平台規格：了解YouTube、Instagram的影片要求。</li>
@@ -409,220 +409,240 @@
         <div class="section" id="practice">
             <h2>宣導影片主題</h2>
             <div class="practice-grid">
-                <div class="practice-item" onclick="showDetail('practice', 1)">
+                <div class="practice-item" onclick="showPracticeDetail(1)">
                     <h3>1. 雲端發票入門</h3>
                     <p>介紹雲端發票的基本功能與使用方式。</p>
                 </div>
                 <div id="practice-detail-1" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(1)">✕</span>
                     <ul>
                         <li>腳本建議：以消費者角度說明雲端發票的便利性。</li>
                         <li>拍攝技巧：使用特寫鏡頭展示手機操作介面。</li>
                         <li>剪輯重點：添加字幕強調操作步驟，控制影片在30秒內。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 2)">
+                <div class="practice-item" onclick="showPracticeDetail(2)">
                     <h3>2. 線上繳稅指南</h3>
                     <p>展示如何透過網路完成稅務繳納。</p>
                 </div>
                 <div id="practice-detail-2" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(2)">✕</span>
                     <ul>
                         <li>腳本建議：模擬真實繳稅場景，突出操作簡單性。</li>
                         <li>拍攝技巧：使用螢幕錄影結合真人解說。</li>
                         <li>剪輯重點：加入箭頭或標記，清楚指引每個步驟。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 3)">
+                <div class="practice-item" onclick="showPracticeDetail(3)">
                     <h3>3. 雲端發票兌獎</h3>
                     <p>說明雲端發票的兌獎流程與優勢。</p>
                 </div>
                 <div id="practice-detail-3" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(3)">✕</span>
                     <ul>
                         <li>腳本建議：用故事化方式呈現中獎的喜悅。</li>
                         <li>拍攝技巧：拍攝兌獎成功的動態畫面，增添趣味。</li>
                         <li>剪輯重點：用快速剪輯展示兌獎步驟，保持節奏輕快。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 4)">
+                <div class="practice-item" onclick="showPracticeDetail(4)">
                     <h3>4. 稅務優惠政策</h3>
                     <p>介紹最新的稅務優惠措施。</p>
                 </div>
                 <div id="practice-detail-4" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(4)">✕</span>
                     <ul>
                         <li>腳本建議：用問答形式解答常見優惠問題。</li>
                         <li>拍攝技巧：採用訪談風格，增加親和力。</li>
                         <li>剪輯重點：加入圖表或動畫解釋政策細節。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 5)">
+                <div class="practice-item" onclick="showPracticeDetail(5)">
                     <h3>5. 雲端發票環保</h3>
                     <p>強調雲端發票的環保效益。</p>
                 </div>
                 <div id="practice-detail-5" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(5)">✕</span>
                     <ul>
                         <li>腳本建議：對比紙本與雲端發票，突出節省資源。</li>
                         <li>拍攝技巧：拍攝自然場景，強化環保主題。</li>
                         <li>剪輯重點：用動畫展示紙張節省的數據。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 6)">
+                <div class="practice-item" onclick="showPracticeDetail(6)">
                     <h3>6. 稅務申報提醒</h3>
                     <p>提醒民眾按時完成稅務申報。</p>
                 </div>
                 <div id="practice-detail-6" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(6)">✕</span>
                     <ul>
                         <li>腳本建議：用倒數計時增加緊迫感。</li>
                         <li>拍攝技巧：拍攝日曆或時鐘，強化時間觀念。</li>
                         <li>剪輯重點：添加提醒音效，吸引觀眾注意。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 7)">
+                <div class="practice-item" onclick="showPracticeDetail(7)">
                     <h3>7. 雲端發票APP</h3>
                     <p>介紹雲端發票APP的功能。</p>
                 </div>
                 <div id="practice-detail-7" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(7)">✕</span>
                     <ul>
                         <li>腳本建議：模擬APP使用情境，展示便利性。</li>
                         <li>拍攝技巧：結合螢幕錄影與真人操作。</li>
                         <li>剪輯重點：用動畫標記APP的關鍵功能。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 8)">
+                <div class="practice-item" onclick="showPracticeDetail(8)">
                     <h3>8. 稅務常見問題</h3>
                     <p>解答民眾對稅務的常見疑惑。</p>
                 </div>
                 <div id="practice-detail-8" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(8)">✕</span>
                     <ul>
                         <li>腳本建議：用問答形式呈現真實問題。</li>
                         <li>拍攝技巧：採用輕鬆對話場景，降低距離感。</li>
                         <li>剪輯重點：加入字幕強調解答重點。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 9)">
+                <div class="practice-item" onclick="showPracticeDetail(9)">
                     <h3>9. 雲端發票安全</h3>
                     <p>說明雲端發票的資料安全性。</p>
                 </div>
                 <div id="practice-detail-9" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(9)">✕</span>
                     <ul>
                         <li>腳本建議：用比喻解釋資料保護機制。</li>
                         <li>拍攝技巧：拍攝加密圖示或安全標誌。</li>
                         <li>剪輯重點：用動畫展示資料傳輸的安全過程。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 10)">
+                <div class="practice-item" onclick="showPracticeDetail(10)">
                     <h3>10. 稅務服務中心</h3>
                     <p>介紹稅務服務中心的幫助管道。</p>
                 </div>
                 <div id="practice-detail-10" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(10)">✕</span>
                     <ul>
                         <li>腳本建議：呈現民眾諮詢的真實場景。</li>
                         <li>拍攝技巧：拍攝服務中心的溫馨環境。</li>
                         <li>剪輯重點：加入聯繫資訊的文字提示。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 11)">
+                <div class="practice-item" onclick="showPracticeDetail(11)">
                     <h3>11. 雲端發票推廣</h3>
                     <p>鼓勵商家採用雲端發票。</p>
                 </div>
                 <div id="practice-detail-11" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(11)">✕</span>
                     <ul>
                         <li>腳本建議：模擬商家使用雲端發票的便利。</li>
                         <li>拍攝技巧：拍攝商店結帳場景，突出效率。</li>
                         <li>剪輯重點：用對比展示傳統與雲端發票的差異。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 12)">
+                <div class="practice-item" onclick="showPracticeDetail(12)">
                     <h3>12. 稅務法規簡介</h3>
                     <p>用簡單方式介紹稅務法規。</p>
                 </div>
                 <div id="practice-detail-12" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(12)">✕</span>
                     <ul>
                         <li>腳本建議：用動畫角色解釋法規重點。</li>
                         <li>拍攝技巧：結合真人與動畫，增加趣味。</li>
                         <li>剪輯重點：控制節奏，確保資訊易懂。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 13)">
+                <div class="practice-item" onclick="showPracticeDetail(13)">
                     <h3>13. 雲端發票整合</h3>
                     <p>展示雲端發票與其他應用的整合。</p>
                 </div>
                 <div id="practice-detail-13" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(13)">✕</span>
                     <ul>
                         <li>腳本建議：呈現雲端發票與支付工具的連動。</li>
                         <li>拍攝技巧：拍攝手機螢幕，展示整合流程。</li>
                         <li>剪輯重點：用箭頭指引整合步驟。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 14)">
+                <div class="practice-item" onclick="showPracticeDetail(14)">
                     <h3>14. 稅務青年宣導</h3>
                     <p>針對年輕族群推廣稅務知識。</p>
                 </div>
                 <div id="practice-detail-14" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(14)">✕</span>
                     <ul>
                         <li>腳本建議：用流行用語與幽默吸引年輕人。</li>
                         <li>拍攝技巧：採用街頭風格，貼近年輕族群。</li>
                         <li>剪輯重點：加入動態轉場與流行音樂。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 15)">
+                <div class="practice-item" onclick="showPracticeDetail(15)">
                     <h3>15. 雲端發票故事</h3>
                     <p>用故事呈現雲端發票的便利。</p>
                 </div>
                 <div id="practice-detail-15" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(15)">✕</span>
                     <ul>
                         <li>腳本建議：設計一個日常購物的小故事。</li>
                         <li>拍攝技巧：拍攝生活化場景，增加代入感。</li>
                         <li>剪輯重點：用柔和轉場營造溫馨氛圍。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 16)">
+                <div class="practice-item" onclick="showPracticeDetail(16)">
                     <h3>16. 稅務重要日期</h3>
                     <p>宣傳稅務申報的關鍵日期。</p>
                 </div>
                 <div id="practice-detail-16" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(16)">✕</span>
                     <ul>
                         <li>腳本建議：用動畫呈現日曆與提醒。</li>
                         <li>拍攝技巧：拍攝計時器或行事曆畫面。</li>
                         <li>剪輯重點：加入醒目文字突出日期。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 17)">
+                <div class="practice-item" onclick="showPracticeDetail(17)">
                     <h3>17. 雲端發票優惠</h3>
                     <p>介紹雲端發票的專屬優惠。</p>
                 </div>
                 <div id="practice-detail-17" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(17)">✕</span>
                     <ul>
                         <li>腳本建議：用比喻呈現優惠的吸引力。</li>
                         <li>拍攝技巧：拍攝兌換優惠的快樂場景。</li>
                         <li>剪輯重點：用動畫強調優惠金額或獎項。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 18)">
+                <div class="practice-item" onclick="showPracticeDetail(18)">
                     <h3>18. 稅務透明化</h3>
                     <p>說明稅務如何用於公共建設。</p>
                 </div>
                 <div id="practice-detail-18" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(18)">✕</span>
                     <ul>
                         <li>腳本建議：展示稅收對社區的正面影響。</li>
                         <li>拍攝技巧：拍攝公園、學校等公共設施。</li>
                         <li>剪輯重點：用圖表呈現稅收分配。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 19)">
+                <div class="practice-item" onclick="showPracticeDetail(19)">
                     <h3>19. 雲端發票挑戰</h3>
                     <p>鼓勵民眾參與雲端發票推廣活動。</p>
                 </div>
                 <div id="practice-detail-19" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(19)">✕</span>
                     <ul>
                         <li>腳本建議：設計一個有趣的挑戰活動。</li>
                         <li>拍攝技巧：拍攝群眾參與的熱鬧場面。</li>
                         <li>剪輯重點：加入快節奏音樂，營造活力感。</li>
                     </ul>
                 </div>
-                <div class="practice-item" onclick="showDetail('practice', 20)">
+                <div class="practice-item" onclick="showPracticeDetail(20)">
                     <h3>20. 稅務未來願景</h3>
                     <p>展望數位化稅務的未來。</p>
                 </div>
                 <div id="practice-detail-20" class="practice-detail">
+                    <span class="close-btn" onclick="closePracticeDetail(20)">✕</span>
                     <ul>
                         <li>腳本建議：用科幻風格呈現未來稅務場景。</li>
                         <li>拍攝技巧：結合動畫與真實畫面，增添創意。</li>
@@ -652,6 +672,18 @@
                 detail.classList.remove('active');
             });
             document.getElementById(`${type}-detail-${id}`).classList.add('active');
+        }
+
+        function showPracticeDetail(id) {
+            document.querySelectorAll('.practice-detail').forEach(detail => {
+                detail.classList.remove('active');
+            });
+            const detail = document.getElementById(`practice-detail-${id}`);
+            detail.classList.add('active');
+        }
+
+        function closePracticeDetail(id) {
+            document.getElementById(`practice-detail-${id}`).classList.remove('active');
         }
     </script>
 </body>

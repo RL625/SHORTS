@@ -1,0 +1,658 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何拍攝宣導短影音 - 臺北市稅捐稽徵處</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+        nav {
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #007aff;
+            font-weight: 500;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+        .section p, .section li {
+            font-size: 1.1em;
+        }
+        .content-list li {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .content-list li:hover {
+            background-color: #f5f5f7;
+        }
+        .content-detail, .practice-detail {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f7;
+            border-radius: 12px;
+        }
+        .content-detail.active, .practice-detail.active {
+            display: block;
+        }
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .practice-item {
+            background-color: #f5f5f7;
+            padding: 20px;
+            border-radius: 12px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .practice-item:hover {
+            transform: translateY(-5px);
+        }
+        .practice-item h3 {
+            margin-top: 0;
+            color: #007aff;
+        }
+        footer {
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>如何拍攝宣導短影音</h1>
+        <p>講師：信義分處 劉念宗 | 單位：臺北市稅捐稽徵處</p>
+    </header>
+    <nav>
+        <a href="#intro">課程簡介</a>
+        <a href="#content">教學內容</a>
+        <a href="#practice">宣導影片主題</a>
+        <a href="#group">分組建議</a>
+    </nav>
+    <div class="container">
+        <div class="section" id="intro">
+            <h2>課程簡介</h2>
+            <p>本課程專為零基礎學員設計，旨在教授如何拍攝具吸引力的宣導短影音，聚焦稅務與雲端發票主題。課程結合理論與實操，學員將學習從腳本撰寫到後期剪輯的全流程，適合3-4人小組協作完成。</p>
+        </div>
+        <div class="section" id="content">
+            <h2>教學內容</h2>
+            <ul class="content-list">
+                <li onclick="showDetail('content', 1)">1. 短影音的重要性</li>
+                <div id="content-detail-1" class="content-detail">
+                    <ul>
+                        <li>短影音的高傳播性：能在短時間內吸引觀眾，適合推廣雲端發票的便利性。</li>
+                        <li>稅務宣導的應用：快速傳達繳稅期限、優惠政策等資訊。</li>
+                        <li>案例分享：分析成功的稅務短影音如何影響公眾行為。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 2)">2. 了解目標受眾</li>
+                <div id="content-detail-2" class="content-detail">
+                    <ul>
+                        <li>受眾分析：針對青年、企業主等不同群體的需求設計內容。</li>
+                        <li>心理洞察：了解觀眾對稅務的常見誤解，製作針對性影片。</li>
+                        <li>雲端發票推廣：如何讓受眾理解電子發票的便利與環保優勢。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 3)">3. 腳本撰寫基礎</li>
+                <div id="content-detail-3" class="content-detail">
+                    <ul>
+                        <li>故事結構：起承轉合如何應用於稅務宣導。</li>
+                        <li>分鏡表設計：將雲端發票推廣分解為可視化鏡頭。</li>
+                        <li>簡潔文案：用淺顯語言傳達稅務資訊，避免專業術語。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 4)">4. 器材選擇</li>
+                <div id="content-detail-4" class="content-detail">
+                    <ul>
+                        <li>手機拍攝：利用智慧型手機的高畫質功能，降低入門門檻。</li>
+                        <li>外接設備：介紹入門級麥克風、三腳架的選購要點。</li>
+                        <li>預算考量：如何以低成本拍攝稅務短片。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 5)">5. 拍攝基礎</li>
+                <div id="content-detail-5" class="content-detail">
+                    <ul>
+                        <li>構圖法則：三分法、對稱構圖提升稅務影片視覺效果。</li>
+                        <li>曝光控制：確保畫面明亮清晰，突出稅務主題。</li>
+                        <li>對焦技巧：保持雲端發票相關畫面銳利。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 6)">6. 光線運用</li>
+                <div id="content-detail-6" class="content-detail">
+                    <ul>
+                        <li>自然光拍攝：在辦公室場景中利用窗光呈現真實感。</li>
+                        <li>人工光設置：簡單環形燈提升稅務影片專業度。</li>
+                        <li>光線情緒：用柔和光線傳達雲端發票的親和力。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 7)">7. 聲音錄製</li>
+                <div id="content-detail-7" class="content-detail">
+                    <ul>
+                        <li>收音設備：選擇適合稅務短片的指向性麥克風。</li>
+                        <li>環境控制：減少背景噪音，確保稅務資訊清晰。</li>
+                        <li>語音表達：錄製時注意語速與語調的親切感。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 8)">8. 運鏡技巧</li>
+                <div id="content-detail-8" class="content-detail">
+                    <ul>
+                        <li>穩定拍攝：使用三腳架或穩定器呈現專業畫面。</li>
+                        <li>動態運鏡：推拉搖移展示雲端發票的操作流程。</li>
+                        <li>場景切換：平滑鏡頭移動增強稅務短片流暢度。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 9)">9. 剪輯軟體入門</li>
+                <div id="content-detail-9" class="content-detail">
+                    <ul>
+                        <li>工具介紹：iMovie、CapCut的介面與功能解析。</li>
+                        <li>基本操作：剪輯、匯入素材與導出稅務短片。</li>
+                        <li>學習資源：免費線上教程幫助快速上手。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 10)">10. 剪輯技巧</li>
+                <div id="content-detail-10" class="content-detail">
+                    <ul>
+                        <li>節奏控制：調整稅務短片剪輯速度，保持觀眾興趣。</li>
+                        <li>轉場應用：淡入淡出、切換鏡頭增強視覺流暢性。</li>
+                        <li>剪輯重點：突出雲端發票的關鍵資訊。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 11)">11. 字幕與文字</li>
+                <div id="content-detail-11" class="content-detail">
+                    <ul>
+                        <li>字幕設計：選擇清晰字型，強調稅務重點。</li>
+                        <li>動態文字：添加雲端發票優惠的動畫效果。</li>
+                        <li>時間控制：確保字幕與畫面同步，提升可讀性。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 12)">12. 背景音樂</li>
+                <div id="content-detail-12" class="content-detail">
+                    <ul>
+                        <li>音樂選擇：挑選版權安全的輕快音樂，符合稅務主題。</li>
+                        <li>音量平衡：確保背景音樂不蓋過稅務資訊。</li>
+                        <li>情緒營造：用音樂增強雲端發票的正面形象。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 13)">13. 色彩校正</li>
+                <div id="content-detail-13" class="content-detail">
+                    <ul>
+                        <li>基礎調色：調整亮度與對比，提升稅務影片質感。</li>
+                        <li>色調統一：確保雲端發票影片視覺一致性。</li>
+                        <li>工具應用：用免費軟體完成簡單調色。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 14)">14. 特效基礎</li>
+                <div id="content-detail-14" class="content-detail">
+                    <ul>
+                        <li>動畫效果：添加雲端發票標誌的簡單動畫。</li>
+                        <li>濾鏡應用：選擇適當濾鏡增強稅務影片吸引力。</li>
+                        <li>特效節制：避免過多特效分散觀眾注意力。</li>
+                    </ul>
+                </div>
+                <li onclick="showétait: showDetail('content', 15)">15. 輸出版本</li>
+                <div id="content-detail-15" class="content-detail">
+                    <ul>
+                        <li>平台規格：了解YouTube、Instagram的影片要求。</li>
+                        <li>解析度選擇：確保稅務短片在不同設備上清晰。</li>
+                        <li>檔案格式：導出適合社群分享的MP4格式。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 16)">16. 稅務宣導主題</li>
+                <div id="content-detail-16" class="content-detail">
+                    <ul>
+                        <li>內容融入：將雲端發票優惠融入故事化短片。</li>
+                        <li>政策推廣：製作繳稅提醒與稅務優惠的影片。</li>
+                        <li>趣味設計：用幽默方式呈現稅務資訊。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 17)">17. 案例分析</li>
+                <div id="content-detail-17" class="content-detail">
+                    <ul>
+                        <li>成功案例：分析稅務短片的結構與傳播效果。</li>
+                        <li>失敗教訓：探討常見錯誤，如資訊過載。</li>
+                        <li>學習要點：如何借鑑優秀雲端發票影片。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 18)">18. 拍攝計劃</li>
+                <div id="content-detail-18" class="content-detail">
+                    <ul>
+                        <li>時間管理：制定稅務短片的拍攝日程。</li>
+                        <li>資源分配：確保器材與場地準備充足。</li>
+                        <li>風險評估：預防拍攝中斷的應對方案。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 19)">19. 團隊協作</li>
+                <div id="content-detail-19" class="content-detail">
+                    <ul>
+                        <li>角色分工：明確導演、攝影、剪輯的職責。</li>
+                        <li>溝通技巧：小組內如何高效協調。</li>
+                        <li>問題解決：處理稅務短片製作中的分歧。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 20)">20. 成果展示</li>
+                <div id="content-detail-20" class="content-detail">
+                    <ul>
+                        <li>作品優化：檢查稅務短片的細節與流暢度。</li>
+                        <li>分享策略：選擇適合的平台發布雲端發票影片。</li>
+                        <li>觀眾反饋：收集意見並改進下一部作品。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 21)">21. 法律常識</li>
+                <div id="content-detail-21" class="content-detail">
+                    <ul>
+                        <li>版權規範：確保音樂與素材合法使用。</li>
+                        <li>肖像權：拍攝稅務短片時需取得同意。</li>
+                        <li>稅務內容：確保資訊正確，避免誤導。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 22)">22. 手機拍攝技巧</li>
+                <div id="content-detail-22" class="content-detail">
+                    <ul>
+                        <li>手機設置：調整解析度與穩定模式。</li>
+                        <li>配件應用：使用手機鏡頭與穩定器提升品質。</li>
+                        <li>快速拍攝：用手機完成稅務短片的高效方法。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 23)">23. 社群平台策略</li>
+                <div id="content-detail-23" class="content-detail">
+                    <ul>
+                        <li>平台特性：針對不同平台調整稅務短片風格。</li>
+                        <li>發文時機：選擇觀眾活躍的時間發布。</li>
+                        <li>標籤策略：用關鍵詞提升雲端發票影片曝光。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 24)">24. 觀眾互動</li>
+                <div id="content-detail-24" class="content-detail">
+                    <ul>
+                        <li>互動設計：在稅務短片中加入提問或投票。</li>
+                        <li>回應觀眾：如何處理雲端發票相關留言。</li>
+                        <li>分享誘因：鼓勵觀眾轉發稅務資訊。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 25)">25. 數據分析</li>
+                <div id="content-detail-25" class="content-detail">
+                    <ul>
+                        <li>數據解讀：分析觀看次數與停留時間。</li>
+                        <li>效果評估：檢視雲端發票影片的推廣成果。</li>
+                        <li>改進方案：根據數據調整下一部稅務短片。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 26)">26. 常見問題</li>
+                <div id="content-detail-26" class="content-detail">
+                    <ul>
+                        <li>拍攝問題：解決曝光不足或畫面抖動。</li>
+                        <li>剪輯錯誤：處理音畫不同步或轉場突兀。</li>
+                        <li>稅務內容：確保資訊簡潔且無誤。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 27)">27. 進階工具</li>
+                <div id="content-detail-27" class="content-detail">
+                    <ul>
+                        <li>專業軟體：介紹Final Cut Pro、Premiere的功能。</li>
+                        <li>進階剪輯：製作更複雜的稅務短片效果。</li>
+                        <li>學習路徑：如何從入門工具過渡到進階工具。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 28)">28. 創意發想</li>
+                <div id="content-detail-28" class="content-detail">
+                    <ul>
+                        <li>腦力激盪：小組討論雲端發票的創意呈現。</li>
+                        <li>故事化設計：將稅務資訊融入日常情境。</li>
+                        <li>創新元素：嘗試動畫或幽默手法推廣稅務。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 29)">29. 現場實拍</li>
+                <div id="content-detail-29" class="content-detail">
+                    <ul>
+                        <li>場景準備：模擬稅務服務中心的拍攝環境。</li>
+                        <li>即時調整：根據現場情況優化拍攝計劃。</li>
+                        <li>團隊配合：確保拍攝過程高效順暢。</li>
+                    </ul>
+                </div>
+                <li onclick="showDetail('content', 30)">30. 總結與回饋</li>
+                <div id="content-detail-30" class="content-detail">
+                    <ul>
+                        <li>課程回顧：複習稅務短片製作的關鍵技巧。</li>
+                        <li>作品評析：分析學員的雲端發票影片成果。</li>
+                        <li>未來建議：如何持續提升短片製作能力。</li>
+                    </ul>
+                </div>
+            </ul>
+        </div>
+        <div class="section" id="practice">
+            <h2>宣導影片主題</h2>
+            <div class="practice-grid">
+                <div class="practice-item" onclick="showDetail('practice', 1)">
+                    <h3>1. 雲端發票入門</h3>
+                    <p>介紹雲端發票的基本功能與使用方式。</p>
+                </div>
+                <div id="practice-detail-1" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：以消費者角度說明雲端發票的便利性。</li>
+                        <li>拍攝技巧：使用特寫鏡頭展示手機操作介面。</li>
+                        <li>剪輯重點：添加字幕強調操作步驟，控制影片在30秒內。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 2)">
+                    <h3>2. 線上繳稅指南</h3>
+                    <p>展示如何透過網路完成稅務繳納。</p>
+                </div>
+                <div id="practice-detail-2" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：模擬真實繳稅場景，突出操作簡單性。</li>
+                        <li>拍攝技巧：使用螢幕錄影結合真人解說。</li>
+                        <li>剪輯重點：加入箭頭或標記，清楚指引每個步驟。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 3)">
+                    <h3>3. 雲端發票兌獎</h3>
+                    <p>說明雲端發票的兌獎流程與優勢。</p>
+                </div>
+                <div id="practice-detail-3" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用故事化方式呈現中獎的喜悅。</li>
+                        <li>拍攝技巧：拍攝兌獎成功的動態畫面，增添趣味。</li>
+                        <li>剪輯重點：用快速剪輯展示兌獎步驟，保持節奏輕快。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 4)">
+                    <h3>4. 稅務優惠政策</h3>
+                    <p>介紹最新的稅務優惠措施。</p>
+                </div>
+                <div id="practice-detail-4" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用問答形式解答常見優惠問題。</li>
+                        <li>拍攝技巧：採用訪談風格，增加親和力。</li>
+                        <li>剪輯重點：加入圖表或動畫解釋政策細節。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 5)">
+                    <h3>5. 雲端發票環保</h3>
+                    <p>強調雲端發票的環保效益。</p>
+                </div>
+                <div id="practice-detail-5" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：對比紙本與雲端發票，突出節省資源。</li>
+                        <li>拍攝技巧：拍攝自然場景，強化環保主題。</li>
+                        <li>剪輯重點：用動畫展示紙張節省的數據。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 6)">
+                    <h3>6. 稅務申報提醒</h3>
+                    <p>提醒民眾按時完成稅務申報。</p>
+                </div>
+                <div id="practice-detail-6" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用倒數計時增加緊迫感。</li>
+                        <li>拍攝技巧：拍攝日曆或時鐘，強化時間觀念。</li>
+                        <li>剪輯重點：添加提醒音效，吸引觀眾注意。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 7)">
+                    <h3>7. 雲端發票APP</h3>
+                    <p>介紹雲端發票APP的功能。</p>
+                </div>
+                <div id="practice-detail-7" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：模擬APP使用情境，展示便利性。</li>
+                        <li>拍攝技巧：結合螢幕錄影與真人操作。</li>
+                        <li>剪輯重點：用動畫標記APP的關鍵功能。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 8)">
+                    <h3>8. 稅務常見問題</h3>
+                    <p>解答民眾對稅務的常見疑惑。</p>
+                </div>
+                <div id="practice-detail-8" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用問答形式呈現真實問題。</li>
+                        <li>拍攝技巧：採用輕鬆對話場景，降低距離感。</li>
+                        <li>剪輯重點：加入字幕強調解答重點。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 9)">
+                    <h3>9. 雲端發票安全</h3>
+                    <p>說明雲端發票的資料安全性。</p>
+                </div>
+                <div id="practice-detail-9" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用比喻解釋資料保護機制。</li>
+                        <li>拍攝技巧：拍攝加密圖示或安全標誌。</li>
+                        <li>剪輯重點：用動畫展示資料傳輸的安全過程。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 10)">
+                    <h3>10. 稅務服務中心</h3>
+                    <p>介紹稅務服務中心的幫助管道。</p>
+                </div>
+                <div id="practice-detail-10" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：呈現民眾諮詢的真實場景。</li>
+                        <li>拍攝技巧：拍攝服務中心的溫馨環境。</li>
+                        <li>剪輯重點：加入聯繫資訊的文字提示。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 11)">
+                    <h3>11. 雲端發票推廣</h3>
+                    <p>鼓勵商家採用雲端發票。</p>
+                </div>
+                <div id="practice-detail-11" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：模擬商家使用雲端發票的便利。</li>
+                        <li>拍攝技巧：拍攝商店結帳場景，突出效率。</li>
+                        <li>剪輯重點：用對比展示傳統與雲端發票的差異。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 12)">
+                    <h3>12. 稅務法規簡介</h3>
+                    <p>用簡單方式介紹稅務法規。</p>
+                </div>
+                <div id="practice-detail-12" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用動畫角色解釋法規重點。</li>
+                        <li>拍攝技巧：結合真人與動畫，增加趣味。</li>
+                        <li>剪輯重點：控制節奏，確保資訊易懂。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 13)">
+                    <h3>13. 雲端發票整合</h3>
+                    <p>展示雲端發票與其他應用的整合。</p>
+                </div>
+                <div id="practice-detail-13" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：呈現雲端發票與支付工具的連動。</li>
+                        <li>拍攝技巧：拍攝手機螢幕，展示整合流程。</li>
+                        <li>剪輯重點：用箭頭指引整合步驟。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 14)">
+                    <h3>14. 稅務青年宣導</h3>
+                    <p>針對年輕族群推廣稅務知識。</p>
+                </div>
+                <div id="practice-detail-14" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用流行用語與幽默吸引年輕人。</li>
+                        <li>拍攝技巧：採用街頭風格，貼近年輕族群。</li>
+                        <li>剪輯重點：加入動態轉場與流行音樂。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 15)">
+                    <h3>15. 雲端發票故事</h3>
+                    <p>用故事呈現雲端發票的便利。</p>
+                </div>
+                <div id="practice-detail-15" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：設計一個日常購物的小故事。</li>
+                        <li>拍攝技巧：拍攝生活化場景，增加代入感。</li>
+                        <li>剪輯重點：用柔和轉場營造溫馨氛圍。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 16)">
+                    <h3>16. 稅務重要日期</h3>
+                    <p>宣傳稅務申報的關鍵日期。</p>
+                </div>
+                <div id="practice-detail-16" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用動畫呈現日曆與提醒。</li>
+                        <li>拍攝技巧：拍攝計時器或行事曆畫面。</li>
+                        <li>剪輯重點：加入醒目文字突出日期。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 17)">
+                    <h3>17. 雲端發票優惠</h3>
+                    <p>介紹雲端發票的專屬優惠。</p>
+                </div>
+                <div id="practice-detail-17" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用比喻呈現優惠的吸引力。</li>
+                        <li>拍攝技巧：拍攝兌換優惠的快樂場景。</li>
+                        <li>剪輯重點：用動畫強調優惠金額或獎項。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 18)">
+                    <h3>18. 稅務透明化</h3>
+                    <p>說明稅務如何用於公共建設。</p>
+                </div>
+                <div id="practice-detail-18" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：展示稅收對社區的正面影響。</li>
+                        <li>拍攝技巧：拍攝公園、學校等公共設施。</li>
+                        <li>剪輯重點：用圖表呈現稅收分配。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 19)">
+                    <h3>19. 雲端發票挑戰</h3>
+                    <p>鼓勵民眾參與雲端發票推廣活動。</p>
+                </div>
+                <div id="practice-detail-19" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：設計一個有趣的挑戰活動。</li>
+                        <li>拍攝技巧：拍攝群眾參與的熱鬧場面。</li>
+                        <li>剪輯重點：加入快節奏音樂，營造活力感。</li>
+                    </ul>
+                </div>
+                <div class="practice-item" onclick="showDetail('practice', 20)">
+                    <h3>20. 稅務未來願景</h3>
+                    <p>展望數位化稅務的未來。</p>
+                </div>
+                <div id="practice-detail-20" class="practice-detail">
+                    <ul>
+                        <li>腳本建議：用科幻風格呈現未來稅務場景。</li>
+                        <li>拍攝技巧：結合動畫與真實畫面，增添創意。</li>
+                        <li>剪輯重點：用漸進轉場展現未來感。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="section" id="group">
+            <h2>分組建議</h2>
+            <p>建議每組3-4人，角色分配如下：</p>
+            <ul>
+                <li><strong>導演</strong>：負責整體創意與進度控制。</li>
+                <li><strong>攝影師</strong>：負責拍攝與構圖。</li>
+                <li><strong>剪輯師</strong>：負責後期製作與特效。</li>
+                <li><strong>腳本/策劃</strong>：負責故事設計與文案（若4人）。</li>
+            </ul>
+            <p>每組可根據成員興趣靈活調整，確保全員參與實操練習。</p>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 臺北市稅捐稽徵處 | 課程設計：劉念宗</p>
+    </footer>
+    <script>
+        function showDetail(type, id) {
+            document.querySelectorAll(`.${type}-detail`).forEach(detail => {
+                detail.classList.remove('active');
+            });
+            document.getElementById(`${type}-detail-${id}`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
